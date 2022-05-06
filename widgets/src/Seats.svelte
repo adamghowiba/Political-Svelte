@@ -3,6 +3,7 @@
       {{#each outputSvg as out, index}}
       <div class="branch-wrapper {{!bothBranches && 'branch-wrapper-big'}}">
          <h3>{{index=== 0 ? title:title2}}</h3>
+         
          <svg viewBox="0 0 360 185" class="svg-seats">
          {{#each out as seat}}
             <g id={{seat.id}} 
@@ -19,6 +20,8 @@
             </g>
          {{/each}}
          </svg>
+
+
          <div class="tooltip widget-tooltip" style="opacity:{{index === ttIndex  ? 1 : 0}};">
             {{#if tooltipLogo}}<img src="{{tooltipLogo}}" alt="" class="logo" />{{/if}}
             <h2>{{tooltipLabel}}<br><small>{{tooltipDesc}}</small> <br>{{tooltipSeats}} seggi</h2>

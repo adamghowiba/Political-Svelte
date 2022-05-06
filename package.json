@@ -32,6 +32,7 @@
   "type": "module",
   "dependencies": {
     "chart.js": "^3.7.1",
-    "chartjs-plugin-datalabels": "^2.0.0"
+    "chartjs-plugin-datalabels": "^2.0.0",
+    "gsap": "^3.10.4"
   }
 }

@@ -3,8 +3,12 @@
 	import Header from '$lib/components/Header.svelte';
 	import PollDataCard from '$lib/components/PollDataCard.svelte';
 	import RegionalCard from '$lib/components/RegionalCard.svelte';
+	import StackedBarChart from '$lib/components/StackedBarChart.svelte';
+	import SvgPoints from '$lib/components/SvgPoints.svelte';
 	import { COALITIONS } from '$lib/data/coalitions';
 	import { REGIONAL_DATA } from '$lib/data/regional';
+	import { CHAMBER_SEATS, SENATE_SEATS } from '$lib/data/seats';
+	import { beforeUpdate, onMount } from 'svelte';
 </script>
 
 <Header
@@ -30,6 +34,22 @@
 	<PollDataCard title="Exit Poll Senato" />
 </section>
 
+<section class="cards stacked-bars">
+	<StackedBarChart
+		data={CHAMBER_SEATS}
+		title="Elezioni Politiche 2018 - Seggi Assegnati alla Camera"
+		totalSeats={630}
+	/>
+	<StackedBarChart
+		data={SENATE_SEATS}
+		title="Seggi Assegnati al Senato"
+		totalSeats={315}
+		hasMasterLegend
+	/>
+</section>
+
+<SvgPoints />
+
 <style>
 	.cards {
 		display: flex;
@@ -41,5 +61,9 @@
 		gap: 1rem;
 		height: 400px;
 		margin: var(--space-md) 0;
+	}
+	.stacked-bars {
+		flex-direction: column;
+		gap: var(--space-md);
 	}
 </style>

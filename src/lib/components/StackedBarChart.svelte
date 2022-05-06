@@ -1,19 +1,19 @@
 <script lang="ts">
+	import type { PartyType, StackedBarData } from '$lib/data/seats';
+	import { stackedCharts } from '$lib/store/stackedStore';
+	import type { ChartOptions, PluginOptionsByType, ScaleOptionsByType } from 'chart.js';
 	import {
-		Chart,
-		LinearScale,
 		BarController,
-		CategoryScale,
 		BarElement,
-		Tooltip,
-		Legend
+		CategoryScale,
+		Chart,
+		Legend,
+		LinearScale,
+		Tooltip
 	} from 'chart.js';
-	import type { ChartOptions, ScaleOptionsByType, PluginOptionsByType, LegendItem } from 'chart.js';
 	import type { DeepPartial } from 'chart.js/types/utils';
 	import ChartDataLabels from 'chartjs-plugin-datalabels';
 	import { onMount } from 'svelte';
-	import type { PartyType, StackedBarData } from '$lib/data/seats';
-	import { dataset_dev } from 'svelte/internal';
 
 	/* Register chart components */
 	Chart.register(
@@ -29,15 +29,15 @@
 	export let title: string;
 	export let totalSeats: number;
 	export let data: StackedBarData[];
+	export let hasMasterLegend: boolean = false;
 
 	let chartElement: HTMLCanvasElement;
 
+	let partyMap = new Map<PartyType, number>();
 	const legendGroups = new Map<number, PartyType[]>();
 	legendGroups.set(0, ['Liberi e Uguali', 'Movimento 5', 'Partito Democratico', 'Centro Sinistra']);
 	legendGroups.set(1, ['Movimento 5', 'Lega']);
 	legendGroups.set(2, ['Movimento 5', 'Centro Destra', 'Forza Italia', 'Lega']);
-
-	let partyMap = new Map<PartyType, number>();
 
 	/* CHART PLUGINS */
 	const CHART_PLUGINS: DeepPartial<PluginOptionsByType<'bar'>> = {
@@ -53,58 +53,19 @@
 			textShadowColor: 'black'
 		},
 		legend: {
+			display: hasMasterLegend,
 			position: 'bottom',
-			labels: {
-				generateLabels: (chart) => {
-					const items: LegendItem[] = [
-						{ datasetIndex: 0, text: 'Parties A', hidden: false },
-						{ datasetIndex: 1, text: 'Parties B', hidden: false },
-						{ datasetIndex: 2, text: 'Parties C', hidden: false }
-					];
-
-					return items;
-				}
-			},
 			onClick: (e, legendItem, legend) => {
 				const index = legendItem.datasetIndex;
 				const ci = legend.chart;
-
-				const filteredLeged = legendGroups.get(index);
-				if (!filteredLeged) return;
-
-				// let visibleIndex: number[] = filteredLeged.map((party) => partyMap.get(party) || 0);
-				let visibleIndexs = Array.from(partyMap.entries()).filter(
-					([key, value]) => !filteredLeged.includes(key)
-				);
-
-				console.log(visibleIndexs);
-
-				visibleIndexs.forEach(([key, value]) => {
-					const datasetMeta = ci.getDatasetMeta(value);
-
-				});
-
-				console.log(legendItem.hidden);
-
-				// legendMap.get(index)?.forEach((dataName) => {
-				// 	if (ci.isDatasetVisible(dataIndex)) {
-				// 		ci.hide(dataIndex);
-				// 		legendItem.hidden = true;
-				// 	} else {
-				// 		ci.show(dataIndex);
-				// 		legendItem.hidden = false;
-				// 	}
-				// });
-
-				ci.update();
-
-				// if (ci.isDatasetVisible(index)) {
-				// 	ci.hide(index);
-				// 	legendItem.hidden = true;
-				// } else {
-				// 	ci.show(index);
-				// 	legendItem.hidden = false;
-				// }
+				if (ci.isDatasetVisible(index)) {
+					$stackedCharts.forEach((chart) => chart.hide(index));
+					legendItem.hidden = true;
+				} else {
+					$stackedCharts.forEach((chart) => chart.show(index));
+					// ci.show(index);
+					legendItem.hidden = false;
+				}
 			}
 		}
 	};
@@ -153,8 +114,7 @@
 			...DEFAULTS,
 			label,
 			data: [amount],
-			backgroundColor: [color],
-			order: amount
+			backgroundColor: [color]
 		}));
 
 		/* This will add none assigned seats to the bar chart so it isn't empty. */
@@ -163,8 +123,7 @@
 				...DEFAULTS,
 				label: 'Non assegnati',
 				backgroundColor: ['#EFEFEF'],
-				data: [remainingSeats],
-				order: 500
+				data: [remainingSeats]
 			});
 
 		return transformedData;
@@ -176,7 +135,6 @@
 			type: 'bar',
 			data: {
 				labels: [''],
-				// datasets: transformChartData(data).sort((a, z) => a.data[0] - z.data[0])
 				datasets: transformChartData(data)
 			},
 			options: CHART_OPTIONS
@@ -185,10 +143,19 @@
 		chart.getSortedVisibleDatasetMetas().forEach((dataset) => {
 			partyMap.set(dataset.label as PartyType, dataset.index);
 		});
+
+		return chart;
 	};
 
 	onMount(() => {
-		initChart();
+		let chart = initChart();
+		$stackedCharts = [...$stackedCharts, chart];
+
+		return () => {
+			/* Reset chart store on destory */
+			if ($stackedCharts.length >= 2) $stackedCharts = [];
+			chart.destroy();
+		};
 	});
 </script>
 
@@ -220,13 +187,13 @@
 	}
 	.majorty {
 		position: absolute;
-		height: 90%;
+		height: 70%;
 		width: 2px;
 		border-radius: 4px;
 		background-color: var(--color-gray-300);
 		border: 2px solid white;
 		left: 50%;
-		top: 40%;
+		top: 30%;
 		transform: translate(-50%, -50%);
 
 		&__tooltip {
