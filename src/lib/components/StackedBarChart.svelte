@@ -1,7 +1,15 @@
 <script lang="ts">
 	import type { PartyType, StackedBarData } from '$lib/data/seats';
 	import { stackedCharts } from '$lib/store/stackedStore';
-	import type { ChartOptions, PluginOptionsByType, ScaleOptionsByType } from 'chart.js';
+	import type {
+		ChartOptions,
+		PluginOptionsByType,
+		ScaleOptionsByType,
+		LegendElement,
+		ChartType,
+		ChartEvent,
+		LegendItem
+	} from 'chart.js';
 	import {
 		BarController,
 		BarElement,
@@ -39,6 +47,20 @@
 	legendGroups.set(1, ['Movimento 5', 'Lega']);
 	legendGroups.set(2, ['Movimento 5', 'Centro Destra', 'Forza Italia', 'Lega']);
 
+	// prettier-ignore
+	function handleLegendClick(this: LegendElement<'bar'>, e: ChartEvent, legendItem: LegendItem, legend: LegendElement<'bar'>): void {
+		const index = legendItem.datasetIndex;
+		const ci = legend.chart;
+		if (ci.isDatasetVisible(index)) {
+			$stackedCharts.forEach((chart) => chart.hide(index));
+			legendItem.hidden = true;
+		} else {
+			$stackedCharts.forEach((chart) => chart.show(index));
+			// ci.show(index);
+			legendItem.hidden = false;
+		}
+	}
+
 	/* CHART PLUGINS */
 	const CHART_PLUGINS: DeepPartial<PluginOptionsByType<'bar'>> = {
 		tooltip: {
@@ -55,18 +77,7 @@
 		legend: {
 			display: hasMasterLegend,
 			position: 'bottom',
-			onClick: (e, legendItem, legend) => {
-				const index = legendItem.datasetIndex;
-				const ci = legend.chart;
-				if (ci.isDatasetVisible(index)) {
-					$stackedCharts.forEach((chart) => chart.hide(index));
-					legendItem.hidden = true;
-				} else {
-					$stackedCharts.forEach((chart) => chart.show(index));
-					// ci.show(index);
-					legendItem.hidden = false;
-				}
-			}
+			onClick: handleLegendClick
 		}
 	};
 
@@ -76,15 +87,15 @@
 			stacked: true,
 			grid: {
 				display: false
-			}
+			},
 		},
 		x: {
 			stacked: true,
 			grid: {
 				display: false
 			},
-			max: totalSeats
-		}
+			max: totalSeats,
+		},
 	};
 
 	/* ALL CHART OPTIONS, (SCALES, PLUGINS) */
@@ -93,7 +104,7 @@
 		responsive: true,
 		maintainAspectRatio: false,
 		plugins: CHART_PLUGINS,
-		scales: CHART_SCALES
+		scales: CHART_SCALES,
 	};
 
 	/* 

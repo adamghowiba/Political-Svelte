@@ -36,3 +36,12 @@ h6 {
 h1, h2, h3, h4, h5, h6 {
 	font-weight: var(--fw-medium);
 }
+
+hr {
+	width: 100%;
+	border: none;
+	border-top: 2px solid var(--color-gray-100);
+	opacity: 0.8;
+	margin: 0;
+	padding: 0;
+}

@@ -1,84 +1,102 @@
 <script lang="ts">
-	import { Chart, LinearScale, BarController, CategoryScale, BarElement, Tooltip } from 'chart.js';
+	import type { PollData } from '$lib/data/pollData';
+	import type { ChartOptions,PluginOptionsByType,ScaleOptionsByType } from 'chart.js';
+	import { BarController,BarElement,CategoryScale,Chart,LinearScale,Tooltip } from 'chart.js';
+	import type { DeepPartial } from 'chart.js/types/utils';
 	import ChartDataLabels from 'chartjs-plugin-datalabels';
 	import { onMount } from 'svelte';
-	let chartElement: HTMLCanvasElement;
-
-	export let title: string;
-
 	Chart.register(LinearScale, BarController, CategoryScale, BarElement, Tooltip, ChartDataLabels);
 
-	const LABELS = [
-		'Partito Democratico',
-		'Movimento 5 Stelle',
-		'Forza Italia',
-		'Lega',
-		"Fratelli d'Italia.",
-		'Liberi e Uguali'
-	];
+	export let title: string;
+	export let pollData: PollData[];
+
+	let chartElement: HTMLCanvasElement;
+
+	/* CHART PLUGINS */
+	const CHART_PLUGINS: DeepPartial<PluginOptionsByType<'bar'>> = {
+		tooltip: {
+			enabled: true,
+			displayColors: false
+		},
+		datalabels: {
+			clip: false,
+			anchor: 'end',
+			align: 'right',
+			color: 'black',
+			font: {
+				weight: 'bold'
+			},
+			formatter: (value) => `${value}%`
+		},
+		legend: {
+			display: false
+		}
+	};``
+
+	/* CHART SCALES */
+	const CHART_SCALES: DeepPartial<{ [key: string]: ScaleOptionsByType<'category'> }> = {
+		y: {
+			ticks: {
+				crossAlign: 'far',
+				font: {
+					size: 11
+				}
+			},
+			grid: {
+				display: false
+			}
+		},
+		x: {
+			grid: {
+				display: false
+			}
+		}
+	};
+
+	/* ALL CHART OPTIONS, (SCALES, PLUGINS) */
+	const CHART_OPTIONS: ChartOptions<'bar'> = {
+		indexAxis: 'y',
+		responsive: true,
+		maintainAspectRatio: false,
+		plugins: CHART_PLUGINS,
+		scales: CHART_SCALES,
+		layout: {
+			padding: {
+				right: 25
+			}
+		}
+	};
+
+	const datasetColor = () => pollData.map((data) => data.color);
+	const databaseLabels = () => pollData.map((data) => data.label);
+	const databaseValues = () => pollData.map((data) => data.value);
 
 	/* Initilaize chart.js library */
 	const initChart = () => {
 		const chart = new Chart(chartElement, {
 			type: 'bar',
 			data: {
-				labels: LABELS,
+				labels: databaseLabels(),
 				datasets: [
 					{
 						label: 'Votes %',
-						data: [47.2, 23.4, 11.3, 14.2, 5.7, 10.8],
-						backgroundColor: ['#fc3116', '#eecc00', '#2b6dab', '#096224', '#074A71', '#FC3116'],
-					},
+						data: databaseValues(),
+						backgroundColor: datasetColor()
+					}
 				]
 			},
-			options: {
-				indexAxis: 'y',
-				responsive: true,
-                maintainAspectRatio: false,
-                layout: {
-                    padding: {
-                        right: 20
-                    },
-                },
-				plugins: {
-					tooltip: {
-						enabled: true,
-                        displayColors: false
-					},
-					datalabels: {
-                        clip: false,
-                        anchor: 'end',
-						align: 'right',
-						color: 'black',
-						font: {
-							weight: 'bold'
-						}
-					}
-				},
-				scales: {
-					y: {
-						ticks: {
-							crossAlign: 'far',
-							font: {
-								size: 11,
-							}
-						},
-                        grid: {
-                            display: false
-                        }
-					},
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-				}
-			}
+			options: CHART_OPTIONS
 		});
+
+		return chart;
 	};
 
 	onMount(() => {
-		initChart();
+		const chart = initChart();
+
+		return () => {
+			chart.destroy();
+		};
 	});
 </script>
 
@@ -93,13 +111,13 @@
 	.card {
 		width: 100%;
 		display: flex;
-        height: 100%;
+		height: 100%;
 		flex-direction: column;
 		gap: var(--space-xs);
 	}
 	.chart {
 		background-color: --color-;
-        height: 100%;
+		height: 100%;
 		background-color: #f9f9f9;
 		border-radius: 7px;
 		padding: var(--space-2xs);

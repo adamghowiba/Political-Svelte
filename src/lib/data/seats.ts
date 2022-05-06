@@ -15,8 +15,11 @@ export const PARTIES = [
 	'Forza Italia',
 	'Lega',
 	'Partito Democratico',
-    'Frateli',
-    'Non assegnati'
+	'Frateli',
+	'Non assegnati',
+	'Casapound Italia',
+	"Noi con l'Italia UDC",
+	"+Europa"
 ] as const;
 
 export const CHAMBER_SEATS: StackedBarData[] = [
@@ -55,7 +58,7 @@ export const CHAMBER_SEATS: StackedBarData[] = [
 		amount: 73,
 		color: '#096224'
 	},
-    {
+	{
 		label: 'Frateli',
 		amount: 19,
 		color: '#096224'
