@@ -27,8 +27,8 @@
 					{
 						label: 'Votes %',
 						data: [47.2, 23.4, 11.3, 14.2, 5.7, 10.8],
-						backgroundColor: ['#fc3116', '#eecc00', '#2b6dab', '#096224', '#074A71', '#FC3116']
-					}
+						backgroundColor: ['#fc3116', '#eecc00', '#2b6dab', '#096224', '#074A71', '#FC3116'],
+					},
 				]
 			},
 			options: {
