@@ -28,7 +28,6 @@
 		{/each}
 	</div>
 
-
 	<div class="bar">
 		{#each candidates as candidate}
 			<div

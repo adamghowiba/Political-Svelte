@@ -1,23 +1,18 @@
 <script lang="ts">
-	import type { PartyType, StackedBarData } from '$lib/data/seats';
+	import type { PartyType,StackedBarData } from '$lib/data/seats';
 	import { stackedCharts } from '$lib/store/stackedStore';
 	import type {
-		ChartOptions,
-		PluginOptionsByType,
-		ScaleOptionsByType,
-		LegendElement,
-		ChartType,
-		ChartEvent,
-		LegendItem
+	ChartEvent,ChartOptions,LegendElement,LegendItem,PluginOptionsByType,
+	ScaleOptionsByType
 	} from 'chart.js';
 	import {
-		BarController,
-		BarElement,
-		CategoryScale,
-		Chart,
-		Legend,
-		LinearScale,
-		Tooltip
+	BarController,
+	BarElement,
+	CategoryScale,
+	Chart,
+	Legend,
+	LinearScale,
+	Tooltip
 	} from 'chart.js';
 	import type { DeepPartial } from 'chart.js/types/utils';
 	import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -104,7 +99,7 @@
 		responsive: true,
 		maintainAspectRatio: false,
 		plugins: CHART_PLUGINS,
-		scales: CHART_SCALES,
+		scales: CHART_SCALES
 	};
 
 	/* 

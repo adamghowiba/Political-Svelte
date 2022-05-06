@@ -1,11 +1,12 @@
 <script lang="ts">
 	import type { PollData } from '$lib/data/pollData';
-	import type { ChartOptions,PluginOptionsByType,ScaleOptionsByType } from 'chart.js';
-	import { BarController,BarElement,CategoryScale,Chart,LinearScale,Tooltip } from 'chart.js';
+	import type { ChartOptions, PluginOptionsByType, ScaleOptionsByType } from 'chart.js';
+	import { CategoryScale, Chart, LinearScale, Tooltip } from 'chart.js';
 	import type { DeepPartial } from 'chart.js/types/utils';
 	import ChartDataLabels from 'chartjs-plugin-datalabels';
 	import { onMount } from 'svelte';
-	Chart.register(LinearScale, BarController, CategoryScale, BarElement, Tooltip, ChartDataLabels);
+
+	Chart.register(LinearScale, CategoryScale, Tooltip, ChartDataLabels);
 
 	export let title: string;
 	export let pollData: PollData[];
@@ -31,7 +32,8 @@
 		legend: {
 			display: false
 		}
-	};``
+	};
+	``;
 
 	/* CHART SCALES */
 	const CHART_SCALES: DeepPartial<{ [key: string]: ScaleOptionsByType<'category'> }> = {

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import CandidateScale from '$lib/components/CandidateScale.svelte';
+import CandidateScale from '$lib/components/CandidateScale.svelte';
 	import CoalitionsCard from '$lib/components/CoalitionsCard.svelte';
 	import Header from '$lib/components/Header.svelte';
-	import PartyLegend from '$lib/components/PartyLegend.svelte';
+import PartyLegend from '$lib/components/PartyLegend.svelte';
 	import PollDataCard from '$lib/components/PollDataCard.svelte';
 	import RegionalCard from '$lib/components/RegionalCard.svelte';
 	import StackedBarChart from '$lib/components/StackedBarChart.svelte';
@@ -12,7 +12,6 @@
 	import { REGIONAL_DATA } from '$lib/data/regional';
 	import { CHAMBER_SEATS, SENATE_SEATS } from '$lib/data/seats';
 	import { chamberSvgCoords, senateSvgCoords } from '$lib/data/svgPoints';
-	import { beforeUpdate, onMount } from 'svelte';
 </script>
 
 <Header
